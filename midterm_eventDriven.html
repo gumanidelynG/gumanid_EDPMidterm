@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        body.dark-mode {
+            background-color: #1a1a1a;
+            color: #ffffff;
+        }
+        
+        .wrapper {
+            display: flex;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+        
+        .content-wrapper {
+            display: flex;
+            flex: 1;
+        }
+        
+        header {
+            background: #35424a;
+            color: #ffffff;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        header h1 {
+            margin: 0;
+            flex: 1;
+        }
+        
+        .header-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .toggle-btn, .theme-btn {
+            position: relative;
+            background: none;
+            border: none;
+            color: #ffffff;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 10px;
+            transition: color 0.3s;
+        }
+        
+        .toggle-btn:hover, .theme-btn:hover {
+            color: #4db8d4;
+        }
+        
+        .sidebar {
+            width: 250px;
+            background: #2c3840;
+            color: #ffffff;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, width 0.3s ease, background-color 0.3s;
+            position: relative;
+            overflow-y: auto;
+            max-height: calc(100vh - 80px);
+        }
+        
+        body.dark-mode .sidebar {
+            background: #0d0d0d;
+        }
+        
+        .sidebar.closed {
+            transform: translateX(-100%);
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            z-index: 1000;
+        }
+        
+        .sidebar h3 {
+            margin-top: 0;
+            color: #ffffff;
+            border-bottom: 2px solid #35424a;
+            padding-bottom: 10px;
+        }
+        
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+        
+        .sidebar ul li {
+            margin: 10px 0;
+        }
+        
+        .sidebar ul li a {
+            color: #ffffff;
+            text-decoration: none;
+            transition: color 0.3s, padding-left 0.3s;
+            display: block;
+            padding: 8px 10px;
+            border-radius: 3px;
+        }
+        
+        .sidebar ul li a:hover {
+            color: #4db8d4;
+            padding-left: 15px;
+            background: rgba(77, 184, 212, 0.1);
+        }
+        
+        .page-section {
+            display: none;
+        }
+        
+        .page-section.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .sidebar ul li a.active {
+            color: #4db8d4;
+            font-weight: bold;
+            background: rgba(77, 184, 212, 0.2);
+        }
+        
+        .container {
+            flex: 1;
+            width: 100%;
+            overflow-y: auto;
+            padding: 20px;
+            transition: background-color 0.3s;
+        }
+        
+        body.dark-mode .container {
+            background-color: #1a1a1a;
+        }
+        
+        img {
+            max-width: 100%;
+            height: auto;
+            cursor: pointer;
+            transition: transform 0.3s, filter 0.3s;
+        }
+        
+        img:hover {
+            transform: scale(1.05);
+            filter: brightness(1.1);
+        }
+        
+        .parallax-container {
+            position: relative;
+            overflow: hidden;
+            height: 400px;
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            border-radius: 5px;
+        }
+        
+        .parallax-img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            cursor: pointer;
+            transition: filter 0.3s;
+        }
+        
+        .parallax-img:hover {
+            filter: brightness(1.1);
+        }
+        
+        .portfolio-item {
+            margin: 20px 0;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s, color 0.3s, transform 0.3s, box-shadow 0.3s;
+            animation: slideUp 0.4s ease-out;
+        }
+        
+        body.dark-mode .portfolio-item {
+            background: #2a2a2a;
+            color: #ffffff;
+        }
+        
+        .portfolio-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .portfolio-item h2 {
+            margin-top: 0;
+            color: #35424a;
+            transition: color 0.3s;
+        }
+        
+        body.dark-mode .portfolio-item h2 {
+            color: #4db8d4;
+        }
+        
+        .portfolio-item p {
+            line-height: 1.6;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: #35424a;
+            color: #ffffff;
+            transition: background-color 0.3s;
+        }
+        
+        body.dark-mode footer {
+            background: #0d0d0d;
+        }
+        
+        video {
+            border-radius: 5px;
+            transition: transform 0.3s;
+        }
+        
+        video:hover {
+            transform: scale(1.02);
+        }
+        
+        /* Modal for image preview */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            animation: fadeIn 0.3s;
+        }
+        
+        .modal.show {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            position: relative;
+            animation: slideUp 0.3s;
+        }
+        
+        .modal-content img {
+            width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            color: #ffffff;
+            font-size: 32px;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        
+        .modal-close:hover {
+            color: #4db8d4;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .content-wrapper {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                max-height: none;
+                position: absolute;
+                top: 80px;
+                left: 0;
+                z-index: 999;
+            }
+            
+            .sidebar.closed {
+                transform: translateY(-100%);
+            }
+            
+            .container {
+                padding: 15px;
+            }
+            
+            header {
+                flex-wrap: wrap;
+            }
+            
+            header h1 {
+                width: 100%;
+                order: 2;
+            }
+            
+            .header-controls {
+                order: 1;
+            }
+            
+            .parallax-container {
+                height: 300px;
+            }
+            
+            .portfolio-item {
+                margin: 15px 0;
+                padding: 15px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .parallax-container {
+                height: 250px;
+            }
+            
+            header {
+                padding: 15px;
+            }
+            
+            header h1 {
+                font-size: 20px;
+            }
+            
+            .toggle-btn, .theme-btn {
+                font-size: 20px;
+                padding: 8px;
+            }
+            
+            .sidebar {
+                width: 100%;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+            
+            .portfolio-item {
+                margin: 10px 0;
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+            <button class="toggle-btn" onclick="toggleSidebar()" title="Toggle Sidebar (O/C)">☰</button>
+            <h1>My Portfolio</h1>
+            <div class="header-controls">
+                <button class="theme-btn" onclick="toggleTheme()" title="Toggle Dark Mode">🌙</button>
+            </div>
+        </header>
+        <div class="content-wrapper">
+            <aside class="sidebar" id="sidebar">
+                <h3>Navigation</h3>
+                <ul>
+                    <li><a href="#about" class="nav-link active" onclick="showPage(event, 'about')">About</a></li>
+                    <li><a href="#gallery" class="nav-link" onclick="showPage(event, 'gallery')">Gallery</a></li>
+                    <li><a href="#media" class="nav-link" onclick="showPage(event, 'media')">Media</a></li>
+                    <li><a href="#contact" class="nav-link" onclick="showPage(event, 'contact')">Contact</a></li>
+                </ul>
+                <h3>Skills</h3>
+                <ul>
+                    <li>Web Design</li>
+                    <li>Video Production</li>
+                    <li>Photography</li>
+                    <li>Content Creation</li>
+                </ul>
+            </aside>
+            <div class="container">
+                <div id="about" class="page-section active">
+                    <div class="portfolio-item">
+                        <h2>About Me</h2>
+                        <p>Welcome to my portfolio! I'm a creative professional with expertise in photography and Videography. I'm passionate in capturing moments and bringing stories to life through visual media.</p>
+                    </div>
+                </div>
+
+                <div id="gallery" class="page-section">
+                    <div class="parallax-container">
+                        <img src="media/sunflower.jpg" alt="Sunflower" class="parallax-img" onclick="openImagePreview('media/sunflower.jpg')">
+                    </div>
+                    <div class="portfolio-item">
+                        <h2>Gallery</h2>
+                        <p>My photography collection showcasing beautiful moments and artistic perspectives. Click on any image to see a full preview!</p>
+                    </div>
+                </div>
+
+                <div id="media" class="page-section">
+                    <div class="portfolio-item">
+                        <h2>Video</h2>
+                        <p>This viedo showcase how technology work.</p>
+                        <video controls style="width: 100%; max-width: 600px;">
+                            <source src="media/video.mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
+                </div>
+
+                <div id="contact" class="page-section">
+                    <div class="portfolio-item">
+                        <h2>Contact</h2>
+                        <p>I'd love to hear from you! Feel free to reach out for inquiries or collaborations.</p>
+                        <p><strong>Email:</strong> elyngumanid@gmail.com</p>
+                        <p><strong>Phone:</strong> 09506108869</p>
+                        <p><strong>Location:</strong> Poblacion San Isidro Bohol</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer>
+        <p>&copy; 2026 My Portfolio</p>
+    </footer>
+
+    <div id="imageModal" class="modal" onclick="closeImagePreview()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <span class="modal-close" onclick="closeImagePreview()">&times;</span>
+            <img id="modalImage" src="" alt="Preview">
+        </div>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('closed');
+        }
+
+        function openSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.remove('closed');
+        }
+
+        function closeSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.add('closed');
+        }
+
+        document.addEventListener('keydown', function(event) {
+            const key = event.key.toUpperCase();
+            if (key === 'O') {
+                openSidebar();
+            } else if (key === 'C') {
+                closeSidebar();
+            } else if (key === 'ESCAPE') {
+                closeSidebar();
+            } else if (key === 'ARROWRIGHT') {
+                navigateToNextPage();
+            } else if (key === 'ARROWLEFT') {
+                navigateToPreviousPage();
+            }
+        });
+
+        function navigateToNextPage() {
+            const navLinks = document.querySelectorAll('.nav-link');
+            let currentIndex = -1;
+            
+            navLinks.forEach((link, index) => {
+                if (link.classList.contains('active')) {
+                    currentIndex = index;
+                }
+            });
+            
+            const nextIndex = (currentIndex + 1) % navLinks.length;
+            navLinks[nextIndex].click();
+        }
+
+        function navigateToPreviousPage() {
+            const navLinks = document.querySelectorAll('.nav-link');
+            let currentIndex = -1;
+            
+            navLinks.forEach((link, index) => {
+                if (link.classList.contains('active')) {
+                    currentIndex = index;
+                }
+            });
+            
+            const prevIndex = (currentIndex - 1 + navLinks.length) % navLinks.length;
+            navLinks[prevIndex].click();
+        }
+
+        function showPage(event, pageId) {
+            event.preventDefault();
+
+            const sections = document.querySelectorAll('.page-section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+
+    
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+            });
+
+            
+            document.getElementById(pageId).classList.add('active');
+
+           
+            event.target.classList.add('active');
+        }
+
+    
+        window.addEventListener('scroll', function() {
+            const parallaxElements = document.querySelectorAll('.parallax-img');
+            parallaxElements.forEach(element => {
+                let scrollPosition = window.pageYOffset;
+                element.style.transform = 'translateY(' + scrollPosition * 0.5 + 'px)';
+            });
+        });
+    </script>
+</body>
+</html>
